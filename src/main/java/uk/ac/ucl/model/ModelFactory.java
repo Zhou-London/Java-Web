@@ -15,13 +15,12 @@ public class ModelFactory
 
   public static Model getModel() throws IOException
   {
-    if (model == null)
-    {
+    if (model == null) {
       model = new Model();
       // Note where the data file is stored in the data directory,
       // and the pathname to locate it.
       // The data should be read the file once, not every time the model is accessed!
-      model.readFile("data/patients100.csv", 0);
+      model.readFile();
     }
     return model;
   }

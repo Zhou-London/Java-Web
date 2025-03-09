@@ -9,12 +9,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import uk.ac.ucl.model.Model;
 import uk.ac.ucl.model.ModelFactory;
+import uk.ac.ucl.model.Note;
 
 
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/patientList.html")
+@WebServlet("/notesList.html")
 public class ViewPatientListServlet extends HttpServlet
 {
 
@@ -23,21 +24,20 @@ public class ViewPatientListServlet extends HttpServlet
     // Get data from model
     try {
       Model model = ModelFactory.getModel();
-      List<String> nodeIndex = model.getNodeIndex();
-      List<String> nodeLabel = model.getNodeLabel();
-      List<String> nodeText = model.getNodeText();
+      List<Note> notes = model.getNoteList();
+
 
       // Set them into request body
-      request.setAttribute("nodeIndex", nodeIndex);
-      request.setAttribute("nodeLabel", nodeLabel);
-      request.setAttribute("nodeText", nodeText);
+      request.setAttribute("notes", notes);
+      request.setAttribute("model", model);
     } catch (Exception e){
+      // Handle exceptions
       request.setAttribute("error", e.getMessage());
     }
 
-    // Set request destination
+    // Render to html
     ServletContext context = getServletContext();
-    RequestDispatcher dispatch = context.getRequestDispatcher("/patientList.jsp");
+    RequestDispatcher dispatch = context.getRequestDispatcher("/notesList.jsp");
     dispatch.forward(request, response);
   }
 }

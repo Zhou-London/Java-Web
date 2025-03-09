@@ -3,20 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <title>Notes</title>
+  <style>
+    body {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: 'Georgia', serif;
+      background-color: #f4f1ea; /* 淡黄色背景 */
+      color: #5a4d41; /* 深棕色文字 */
+    }
+    h2 {
+      text-align: center;
+      color: #8b7d6b; /* 棕色标题 */
+      padding-bottom: 20px;
+      border-bottom: 1px solid #d9d2c9; /* 浅棕色边框 */
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      width: 100%;
+      max-width: 400px; /* 限制导航宽度 */
+    }
+    li {
+      margin: 10px 0;
+      background-color: #e6e0d4; /* 更深的淡黄色背景 */
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #d9d2c9; /* 浅棕色边框 */
+    }
+    a {
+      color: #a67f59; /* 棕色链接 */
+      text-decoration: none;
+      font-size: 1.1em;
+    }
+    a:hover {
+      text-decoration: underline; /* 悬停时显示下划线 */
+    }
+  </style>
 </head>
 <body>
-<h2>Welcome to the Notes App</h2>
-
+<h2>Notes App</h2>
 <nav>
   <ul>
     <li>
-      <a href="patientList.html">View the Notes List</a>
+      <a href="notesList.html">View the Notes List</a>
     </li>
     <li>
       <a href="search.html">Search</a>
     </li>
   </ul>
 </nav>
-
 </body>
 </html>
