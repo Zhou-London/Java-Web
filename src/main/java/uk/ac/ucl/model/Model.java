@@ -9,13 +9,17 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
 // Written by Zhouzhou Zhang, based on the provided skeleton
-// Mar 8, updated by Grok 3 on Mar 08, 2025
 
 public class Model {
-  // Instance variable to store the data
+  /* Initialize */
+  // Use List to store notes
+  // Not using Hash Table, considering the need of index
   private List<Note> noteList = new ArrayList<>();
-  // File Path
+
+  // Configure the file path
   private final String PATH = "data/patients100.csv";
+
+  /* Methods */
   // Public method to return Notes list
   public List<Note> getNoteList() {
     return noteList;
@@ -61,9 +65,28 @@ public class Model {
   }
 
   // Method to create a new note
-  public void createNote(Note note) {
+  public void addNote(Note note) {
     noteList.add(note);
     saveData();
+  }
+
+  // Method to delete a note
+  public void removeNote(int noteId) {
+    noteList.remove(noteId);
+    saveData();
+  }
+
+  // Method to search notes
+  public List<Note> searchNotes(String keyword){
+    List<Note> result = new ArrayList<>();
+    String lowerCaseKeyword = keyword.toLowerCase();
+    for (Note note : noteList) {
+      if (note.getLabel().toLowerCase().contains(lowerCaseKeyword.toLowerCase())
+      || note.getText().toLowerCase().contains(lowerCaseKeyword.toLowerCase())) {
+        result.add(note);
+      }
+    }
+    return result;
   }
 
   // Method to Modify a row

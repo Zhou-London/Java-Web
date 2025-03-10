@@ -9,28 +9,31 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import uk.ac.ucl.model.Model;
 import uk.ac.ucl.model.ModelFactory;
+import uk.ac.ucl.model.Note;
 
 
 import java.io.IOException;
 import java.util.List;
 
-// The servlet invoked to perform a search.
-// The url http://localhost:8080/runsearch.html is mapped to calling doPost on the servlet object.
-// The servlet object is created automatically, you just provide the class.
-@WebServlet("/runsearch.html")
-public class SearchServlet extends HttpServlet
-{
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-  {
-    // Use the model to do the search and put the results into the request object sent to the
-    // Java Server Page used to display the results.
-    Model model = ModelFactory.getModel();
-    List<String> searchResult = model.searchFor(request.getParameter("searchstring"));
-    request.setAttribute("result", searchResult);
 
-    // Invoke the JSP page.
+@WebServlet("/searchNotes.html")
+public class SearchServlet extends HttpServlet{
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    try{
+      Model model = ModelFactory.getModel();
+      String keyword = request.getParameter("keyword");
+      List<Note> results = model.searchNotes(keyword);
+      request.setAttribute("results", results);
+      RequestDispatcher dispatcher = request.getRequestDispatcher("/search.jsp");
+      dispatcher.forward(request, response);
+    } catch (Exception e){
+      e.printStackTrace();
+    }
+  }
+
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     ServletContext context = getServletContext();
-    RequestDispatcher dispatch = context.getRequestDispatcher("/searchResult.jsp");
-    dispatch.forward(request, response);
+    RequestDispatcher dispatcher = context.getRequestDispatcher("/search.jsp");
+    dispatcher.forward(request, response);
   }
 }

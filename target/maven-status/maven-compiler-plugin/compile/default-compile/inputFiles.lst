@@ -3,6 +3,8 @@
 /Users/zhou/repo/Java-Web/src/main/java/uk/ac/ucl/model/ModelFactory.java
 /Users/zhou/repo/Java-Web/src/main/java/uk/ac/ucl/model/Note.java
 /Users/zhou/repo/Java-Web/src/main/java/uk/ac/ucl/servlets/CreateNewNote.java
+/Users/zhou/repo/Java-Web/src/main/java/uk/ac/ucl/servlets/DeleteNote.java
 /Users/zhou/repo/Java-Web/src/main/java/uk/ac/ucl/servlets/SearchServlet.java
 /Users/zhou/repo/Java-Web/src/main/java/uk/ac/ucl/servlets/ViewNoteInfo.java
 /Users/zhou/repo/Java-Web/src/main/java/uk/ac/ucl/servlets/ViewPatientListServlet.java
+/Users/zhou/repo/Java-Web/src/main/java/uk/ac/ucl/util/createTimeStamp.java

@@ -3,6 +3,9 @@ package uk.ac.ucl.model;
 import java.io.File;
 import java.io.IOException;
 
+/* This file doesn't have any change, yet */
+
+
 // This class gives access to the model to any other class that needs it.
 // Calling the static method getModel (i.e., ModelFactory.getModel()) returns
 // an initialised Model object. This version limits the program to one model object,
