@@ -1,4 +1,7 @@
-package uk.ac.ucl.model;
+package uk.ac.ucl.model.Note;
+
+import uk.ac.ucl.model.Category;
+import uk.ac.ucl.model.NoteType;
 
 import java.util.List;
 
@@ -10,36 +13,37 @@ import java.util.List;
 public class Note {
 
     /*Documentation*/
-    // "index" is the node's index in the List
+    // "id" is the key in the HashMap, which is not yet determined
     // "label" is title
     // "text" is the content
     // "timestamp" is the time since last update
-    // "index" is defined dynamically
-    // Everytime the nodesList page is refreshed,
-    // "index" will be assigned
-    // This would automatically fix the gap of deleted notes
+    // "Category" is an enum class
 
 
-    private String index;
+    private int id;
     private String label;
     private String text;
     private String timestamp;
     private Category category;
+    private NoteType noteType;
 
 
     // Constructor
-    public Note(String index, String label, String text, String timestamp) {
-        this.index = index;
+    public Note(String label, String text, String timestamp) {
+        // Default id
+        this.id = -1;
         this.label = label;
         this.text = text;
         this.timestamp = timestamp;
+        // Default
         this.category = Category.CASUAL;
+        this.noteType = NoteType.DEFAULT;
     }
 
     // Getter with Setter
-    public String getIndex() { return index; }
+    public int getID() { return id; }
 
-    public void setIndex(String index) { this.index = index; }
+    public void setID(int id) { this.id = id; }
 
     public String getLabel() { return label; }
 
@@ -57,9 +61,13 @@ public class Note {
 
     public void setCategory(Category category) { this.category = category; }
 
+    public NoteType getNoteType() { return noteType; }
+
+    public void setNoteType(NoteType noteType) { this.noteType = noteType; }
+
     // Convert a note to a list
     // Can be then inserted into CSV
     public List<String> toList() {
-        return List.of(index, label, text, timestamp, category.toString());
+        return List.of(label, text, timestamp, category.toString(), noteType.toString(), "");
     }
 }

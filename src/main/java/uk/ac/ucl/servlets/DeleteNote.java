@@ -14,10 +14,7 @@ import java.io.IOException;
 
 /* Documentation */
 // This is a servlet with ONLY a POST method.
-// The POST method is used to delete a note
-// The data posted is an index of list
-// Then, according to this index, delete the note
-// Finally, refresh the page automatically.
+// Used to remove a Note from the model
 
 
 
@@ -29,23 +26,17 @@ public class DeleteNote extends HttpServlet {
         try{
             // Get File handler
             Model model = ModelFactory.getModel();
-            // Get Index from POST
-            int index = Integer.parseInt(request.getParameter("rowIndex"));
-            // Use this Index to delete the note
-            model.removeNote(index);
-            // notesList.html will automatically detect the deletion
-            // and update the view.
+            // Get key
+            int key = Integer.parseInt(request.getParameter("key"));
+            // Remove the note
+            model.removeNote(key);
+            // Redirect
             response.sendRedirect("notesList.html");
         } catch (Exception e){
-            // Something bad happened, doesn't really matter though
-            // So we head back to the home page!
+            // Handle error
             e.printStackTrace();
             response.sendRedirect("http://localhost:8080/");
         }
-    }
-
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
     }
 
 }

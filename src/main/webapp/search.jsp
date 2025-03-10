@@ -1,4 +1,4 @@
-<%@ page import="uk.ac.ucl.model.Note" %>
+<%@ page import="uk.ac.ucl.model.Note.Note" %>
 <%@ page import="java.util.List" %>
 <%@ page import="uk.ac.ucl.model.Model" %>
 <%@ page import="uk.ac.ucl.model.ModelFactory" %>
@@ -31,6 +31,7 @@
         label {
             color: #5a4d41;
             font-weight: bold;
+            text-align: center;  /* 标签居中 */
         }
         input[type="text"] {
             width: 100%;
@@ -41,6 +42,7 @@
             font-family: 'Georgia', serif;
             color: #5a4d41;
             box-sizing: border-box;
+            text-align: center;  /* 输入框文本居中 */
         }
         input[type="submit"], button {
             padding: 10px;
@@ -68,10 +70,11 @@
             padding: 10px;
             border-bottom: 1px solid #d9d2c9;
             background-color: #e6e0d4;
+            justify-content: center;  /* 整行居中 */
         }
         .note-row a, .note-row span {
             display: inline-block;
-            text-align: center;
+            text-align: center;  /* 文本居中 */
         }
         .note-row a {
             color: #a67f59;
@@ -80,34 +83,34 @@
         .note-row a:hover {
             text-decoration: underline;
         }
-        .index { flex: 0 0 15%; }
-        .label { flex: 1; }
+        .key { flex: 0 0 15%; }
+        .category { flex: 0 0 20%; }  /* 为category分配空间 */
+        .label { flex: 0 0 25%; }
         .text { flex: 0 0 25%; }
-        .timestamp { flex: 0 0 30%; }
+        .timestamp { flex: 0 0 20%; }
     </style>
 </head>
 <body>
-<h1>Search for a Note</h1>
+<h1>Search for a Note</h1>  <!-- 加回标题 -->
 <form action="/searchNotes.html" method="post">
     <label for="keyword">Keyword:</label>
     <input type="text" id="keyword" name="keyword" placeholder="Enter a keyword to search">
     <input type="submit" value="Search">
 </form>
 <%
-    Model model = ModelFactory.getModel();
-    List<Note> originalNotes = model.getNoteList();
     List<Note> results = (List<Note>) request.getAttribute("results");
     if (results != null && !results.isEmpty()) {
         for (Note note : results) {
-            String index = note.getIndex();
+            int key = note.getID();
             String label = note.getLabel();
             String text = note.getText();
             String timestamp = note.getTimestamp();
-            int originalIndex = originalNotes.indexOf(note);
-            String href = "http://localhost:8080/viewNoteInfo.html?index=" + originalIndex;
+            String category = note.getCategory().toString();
+            String href = "http://localhost:8080/viewNoteInfo.html?key=" + key;
 %>
 <div class="note-row">
-    <a href="<%= href %>" class="index"><%= index %></a>
+    <a href="<%= href %>" class="key"><%= key %></a>
+    <span class="category"><%= category %></span>
     <span class="label"><%= label.length() > 25 ? label.substring(0, 25) + "..." : label %></span>
     <span class="text"><%= text.length() > 25 ? text.substring(0, 25) + "..." : text %></span>
     <span class="timestamp"><%= timestamp.substring(0, 19) %></span>
@@ -116,6 +119,6 @@
         }
     }
 %>
-<button onclick="window.location.href='http://localhost:8080/notesList.html'">Back to Notes List</button>
+<button onclick="window.location.href='http://localhost:8080'">Back to Home</button>
 </body>
 </html>

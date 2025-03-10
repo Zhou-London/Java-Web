@@ -1,16 +1,18 @@
 <%@ page import="java.util.List" %>
-<%@ page import="uk.ac.ucl.model.Note" %>
+<%@ page import="uk.ac.ucl.model.Note.Note" %>
 <%@ page import="uk.ac.ucl.model.Model" %>
 <%@ page import="uk.ac.ucl.model.ModelFactory" %>
 <%@ page import="org.w3c.dom.Node" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="uk.ac.ucl.model.Category" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-  <jsp:include page="/meta.jsp"/>
   <title>Notes App</title>
   <style>
     body {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 20px;
       font-family: 'Georgia', serif;
@@ -20,32 +22,54 @@
     h1 {
       text-align: center;
       color: #8b7d6b;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #d9d2c9;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .filter-form, .sort-form {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .notes-table {
+      border: 1px solid #d9d2c9;
+      border-radius: 5px;
+      overflow: hidden;
     }
     .header-row, .note-row {
       display: flex;
-      padding: 10px;
+      padding: 12px;
       border-bottom: 1px solid #d9d2c9;
     }
     .header-row {
       font-weight: bold;
       background-color: #e6e0d4;
     }
-    .note-row a, .note-row span, .header-row span {
-      display: inline-block;
-      text-align: center;
+    .note-row:last-child {
+      border-bottom: none;
     }
-    .index {
-      flex: 0 0 15%;
+    .note-row:hover {
+      background-color: #fffcf7;
     }
-    .label {
+    .key, .category, .label, .text, .timestamp {
       flex: 1;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .text {
-      flex: 0 0 25%;
-    }
-    .timestamp {
-      flex: 0 0 30%;
-    }
+    .key { flex: 0 0 10%; }
+    .category { flex: 0 0 20%; }
+    .label { flex: 0 0 25%; }
+    .text { flex: 0 0 25%; }
+    .timestamp { flex: 0 0 20%; }
     .note-row a {
       color: #a67f59;
       text-decoration: none;
@@ -53,96 +77,106 @@
     .note-row a:hover {
       text-decoration: underline;
     }
-    .back-button, select, input[type="submit"] {
-      display: block;
-      width: 200px;
-      margin: 10px auto;
-      padding: 10px;
+    select, input[type="submit"], .back-button {
+      padding: 8px 16px;
       background-color: #a67f59;
       color: #f4f1ea;
       border: none;
       border-radius: 5px;
       font-family: 'Georgia', serif;
-      font-size: 1.1em;
-      text-align: center;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
-    .back-button:hover, select:hover, input[type="submit"]:hover {
+    select:hover, input[type="submit"]:hover, .back-button:hover {
       background-color: #8b7d6b;
-      text-decoration: underline;
     }
-    .sort-form {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
+    label {
+      color: #5a4d41;
+      font-weight: bold;
+    }
+    .back-button {
+      display: block;
+      width: 200px;
+      margin: 20px auto;
+      text-attachment: center;
+    }
+    .no-notes {
+      text-align: center;
+      color: #a67f59;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
 <jsp:include page="/header.jsp"/>
 <h1>Notes</h1>
-<form class="sort-form" action="/notesList.html" method="get">
-  <select name="sortBy">
-    <option value="index" <%= "index".equals(request.getParameter("sortBy")) ? "selected" : "" %>>Sort by Index</option>
-    <option value="time_newest" <%= "time_newest".equals(request.getParameter("sortBy")) ? "selected" : "" %>>Sort by Time (Newest First)</option>
-    <option value="time_oldest" <%= "time_oldest".equals(request.getParameter("sortBy")) ? "selected" : "" %>>Sort by Time (Oldest First)</option>
-  </select>
-  <input type="submit" value="Sort">
-</form>
-<div>
+
+<div class="controls">
+  <form action="/notesList.html" method="get" class="filter-form">
+    <label for="categoryFilter">Filter by Category:</label>
+    <select id="categoryFilter" name="categoryFilter" onchange="this.form.submit()">
+      <option value="">All Categories</option>
+      <%
+        String selectedCategory = request.getParameter("categoryFilter");
+        for (Category category : Category.values()) {
+          String displayName = category.getDisplayName();
+          String selected = displayName.equals(selectedCategory) ? "selected" : "";
+      %>
+      <option value="<%= displayName %>" <%= selected %>><%= displayName %></option>
+      <% } %>
+    </select>
+  </form>
+
+  <form action="/notesList.html" method="get" class="sort-form">
+    <label for="sortBy">Sort by:</label>
+    <select id="sortBy" name="sortBy" onchange="this.form.submit()">
+      <option value="key" <%= "key".equals(request.getParameter("sortBy")) ? "selected" : "" %>>Key</option>
+      <option value="timestamp" <%= "timestamp".equals(request.getParameter("sortBy")) ? "selected" : "" %>>Timestamp</option>
+      <option value="label" <%= "label".equals(request.getParameter("sortBy")) ? "selected" : "" %>>Label</option>
+      <option value="category" <%= "category".equals(request.getParameter("sortBy")) ? "selected" : "" %>>Category</option>
+    </select>
+    <input type="hidden" name="categoryFilter" value="<%= selectedCategory != null ? selectedCategory : "" %>">
+  </form>
+</div>
+
+<div class="notes-table">
   <div class="header-row">
-    <span class="index">Index</span>
+    <span class="key">Key</span>
+    <span class="category">Category</span>
     <span class="label">Label</span>
     <span class="text">Text</span>
     <span class="timestamp">Time</span>
   </div>
   <%
-    Model model = (Model) request.getAttribute("model");
-    if (model != null && model.getNoteList() != null) {
-      List<Note> originalNotes = model.getNoteList(); // 原始列表
-      List<Note> notes = new java.util.ArrayList<>(originalNotes); // 创建副本用于排序
-      String sortBy = request.getParameter("sortBy");
-
-      // 只在首次加载（sortBy == null）时分配 index
-      if (sortBy == null) {
-        for (int i = 0; i < notes.size(); i++) {
-          model.setNoteIndex(i, Integer.toString(i + 1));
-        }
-      }
-
-      // 根据用户选择排序副本列表
-      if ("index".equals(sortBy)) {
-        notes.sort((n1, n2) -> Integer.parseInt(n1.getIndex()) - Integer.parseInt(n2.getIndex()));
-      } else if ("time_newest".equals(sortBy)) {
-        notes.sort((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp()));
-      } else if ("time_oldest".equals(sortBy)) {
-        notes.sort((n1, n2) -> n1.getTimestamp().compareTo(n2.getTimestamp()));
-      }
-
-      // 显示排序后的列表，使用原始索引查找对应位置
-      for (int i = 0; i < notes.size(); i++) {
-        Note currentNote = notes.get(i);
-        String index = currentNote.getIndex();
-        String label = currentNote.getLabel();
-        String text = currentNote.getText();
-        String timestamp = currentNote.getTimestamp().substring(0, 19);
-        // 查找当前 Note 在原始列表中的位置
-        int originalIndex = originalNotes.indexOf(currentNote);
-        String href = "viewNoteInfo.html?index=" + originalIndex;
+    HashMap<Integer, Note> notes = (HashMap<Integer, Note>) request.getAttribute("notes");
+    if (notes != null && !notes.isEmpty()) {
+      for (Map.Entry<Integer, Note> entry : notes.entrySet()) {
+        Note thisNote = entry.getValue();
+        Integer thisKey = entry.getKey();
+        String label = thisNote.getLabel();
+        String text = thisNote.getText();
+        String timestamp = thisNote.getTimestamp();
+        Category category = thisNote.getCategory();
+        String categoryDisplayName = category.getDisplayName();
+        String href = "/viewNoteInfo.html?key=" + thisKey;
   %>
   <div class="note-row">
-    <a href="<%= href %>" class="index"><%= index %></a>
+    <a href="<%= href %>" class="key"><%= thisKey %></a>
+    <span class="category"><%= categoryDisplayName %></span>
     <span class="label"><%= label.length() > 25 ? label.substring(0, 25) + "..." : label %></span>
     <span class="text"><%= text.length() > 25 ? text.substring(0, 25) + "..." : text %></span>
-    <span class="timestamp"><%= timestamp %></span>
+    <span class="timestamp"><%= timestamp.substring(5, 16) %></span>
   </div>
   <%
-      }
-    } else {
-      out.println("<p style='text-align: center; color: #a67f59;'>No notes available.</p>");
+    }
+  } else {
+  %>
+  <div class="no-notes">No notes available.</div>
+  <%
     }
   %>
 </div>
+
 <button class="back-button" onclick="window.location.href='http://localhost:8080'">Back to Home</button>
 </body>
 </html>

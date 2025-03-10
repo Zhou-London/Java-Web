@@ -7,10 +7,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import uk.ac.ucl.model.Category;
 import uk.ac.ucl.model.Model;
 import uk.ac.ucl.model.ModelFactory;
-import uk.ac.ucl.model.Note;
+import uk.ac.ucl.model.Note.ImageNote;
+import uk.ac.ucl.model.Note.LinkNote;
+import uk.ac.ucl.model.Note.Note;
+import uk.ac.ucl.model.NoteType;
+import uk.ac.ucl.util.checkNoteType;
 import uk.ac.ucl.util.createTimeStamp;
+import uk.ac.ucl.util.checkCategory;
 import java.io.IOException;
 
 // Written by Zhouzhou
@@ -21,8 +27,7 @@ import java.io.IOException;
 //      Render the "createNewNote" page
 // POST:
 //      Receive the data
-//      Insert it to the List
-//      Modify the CSV file
+//      Modify the model
 
 
 
@@ -31,19 +36,44 @@ public class CreateNewNote extends HttpServlet {
     // POST method to add a new note
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try{
+            // Get model
             Model model = ModelFactory.getModel();
+            // Get data
             String label = request.getParameter("label");
             String text = request.getParameter("text");
             String timestamp = createTimeStamp.ISO();
-            // Index will be added, after its being inserted into the note List.
-            Note note = new Note("0",label, text, timestamp);
-
-            model.addNote(note);
-
+            String category = request.getParameter("category");
+            Category CATEGORY = checkCategory.get(category);
+            String type = request.getParameter("type");
+            NoteType noteType = checkNoteType.get(type);
+            // Construct a new Note
+            Note newNote;
+            switch(noteType){
+                case LINK:
+                    LinkNote thisNote = new LinkNote(label, text, timestamp);
+                    String special = request.getParameter("special");
+                    thisNote.setLink(special);
+                    newNote = thisNote;
+                    break;
+                case IMAGE:
+                    ImageNote imageNote = new ImageNote(label, text, timestamp);
+                    String image = request.getParameter("imageUrl");
+                    imageNote.setImage(image);
+                    newNote = imageNote;
+                    break;
+                default:
+                    newNote = new Note(label, text, timestamp);
+                    break;
+            }
+            newNote.setNoteType(noteType);
+            newNote.setCategory(CATEGORY);
+            // Insert
+            model.addNote(newNote);
+            // Redirect
             response.sendRedirect("notesList.html");
 
         } catch (Exception e){
-            // Failed adding the new note
+            // Handle Error
             e.printStackTrace();
         }
     }

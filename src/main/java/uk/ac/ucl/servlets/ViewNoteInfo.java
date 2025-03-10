@@ -9,10 +9,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import uk.ac.ucl.model.Model;
 import uk.ac.ucl.model.ModelFactory;
-import uk.ac.ucl.model.Note;
+import uk.ac.ucl.model.Note.Note;
 import uk.ac.ucl.util.createTimeStamp;
 import java.io.IOException;
-import java.util.List;
 
 
 // Written by Zhouzhou
@@ -20,33 +19,30 @@ import java.util.List;
 /* Documentation */
 // This is a servlet for both GET and POST
 // GET:
-//      Return the Data (File handler and File itself)
+//      Return the specific Note you clicked
 // POST:
-//      Update a Note
-// Every time I view the note, I wish I can modify it.
-// Hence, the POST method is here, rather than anywhere else.
+//      Update this Note based on your edition
+//
 
 
 
 @WebServlet("/viewNoteInfo.html")
 public class ViewNoteInfo extends HttpServlet {
 
+    private Model model;
+
     // GET method to return data
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             // Get File handler
-            Model model = ModelFactory.getModel();
-            // Get note index
-            int index = Integer.parseInt(request.getParameter("index"));
-            // Get note list
-            List<Note> notes = model.getNoteList();
-
-            // Get corresponding note
-            Note note = notes.get(index);
-
+            model = ModelFactory.getModel();
+            // Get Key
+            Integer key = Integer.parseInt(request.getParameter("key"));
+            // Get note
+            Note thisNote = model.searchNoteByID(key);
             // Send this note to JSP
-            request.setAttribute("note", note);
+            request.setAttribute("note", thisNote);
 
         } catch (Exception e){
             //Failed
@@ -62,29 +58,22 @@ public class ViewNoteInfo extends HttpServlet {
     // POST method to update data
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try{
-            // Get File handler
-            Model model = ModelFactory.getModel();
-            // Get note's index in the List from POST
-            int rowIndex = Integer.parseInt(request.getParameter("rowIndex"));
-            // Convert the index to an index field (Start from 0)
-            String index = Integer.toString(rowIndex + 1);
-            // Get label, or may say title from POST
+            // Get key
+            Integer key = Integer.parseInt(request.getParameter("key"));
+            // Get label
             String label = request.getParameter("label");
-            // Get text from POST
+            // Get text
             String text = request.getParameter("text");
-
             // Get current timestamp from a util function
             String timestamp = createTimeStamp.ISO();
 
             // Update the notes based on this information
-            model.setNoteIndex(rowIndex, index);
-            model.setNoteLabel(rowIndex, label);
-            model.setNoteText(rowIndex, text);
-            model.setNoteTimestamp(rowIndex, timestamp);
+            model.setNoteLabel(key, label);
+            model.setNoteText(key, text);
+            model.setNoteTimestamp(key, timestamp);
 
-            // Notes are already updated, before redirection
-            // Then redirect user to the information page
-            response.sendRedirect("viewNoteInfo.html?index=" + (rowIndex));
+            // Redirect
+            response.sendRedirect("viewNoteInfo.html?key=" + key);
 
         } catch (Exception e){
             // Anything wrong took place, take user to an "error" page
