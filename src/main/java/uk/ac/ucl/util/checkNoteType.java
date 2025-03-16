@@ -2,6 +2,8 @@ package uk.ac.ucl.util;
 
 import uk.ac.ucl.model.NoteType;
 
+// Same as check category
+
 
 public class checkNoteType {
 

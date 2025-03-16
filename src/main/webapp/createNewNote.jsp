@@ -145,6 +145,7 @@
 <button class="back-button" onclick="window.history.back();">Back</button>
 
 <script>
+    // Manage the appearance of the Form
     const typeSelect = document.getElementById('type');
     const specialField = document.getElementById('special-field');
     const imageField = document.getElementById('image-field');
@@ -153,8 +154,10 @@
     const imageUrlInput = document.getElementById('image-url');
     const imagePreview = document.getElementById('image-preview');
     const errorMessage = document.getElementById('error-message');
-    const maxFileSize = 5 * 1024 * 1024; // 5MB
+    const maxFileSize = 1 * 1024 * 1024; // 1MB
 
+
+    // 3 kinds of Note, default, image or link
     function updateFields() {
         const value = typeSelect.value;
         specialField.style.display = value === 'LINK' ? 'block' : 'none';
@@ -164,12 +167,14 @@
         }
     }
 
+    // Clean the preview icon
     function clearImagePreview() {
         imagePreview.innerHTML = '';
         imageUrlInput.value = '';
         errorMessage.textContent = '';
     }
 
+    // Process the image
     function handleImage(file) {
         if (!file) {
             errorMessage.textContent = 'No file selected.';
@@ -182,7 +187,7 @@
         }
 
         if (file.size > maxFileSize) {
-            errorMessage.textContent = 'File size exceeds 5MB limit.';
+            errorMessage.textContent = 'File size exceeds 1MB limit.';
             return;
         }
 
@@ -199,6 +204,7 @@
         reader.readAsDataURL(file);
     }
 
+    // Interaction
     typeSelect.addEventListener('change', updateFields);
     window.addEventListener('load', updateFields);
 
@@ -227,7 +233,7 @@
         handleImage(file);
     });
 
-    // Clear image input after selection to prevent re-upload issues
+    // Clear image input after selection
     imageInput.addEventListener('click', () => {
         imageInput.value = '';
     });

@@ -7,8 +7,8 @@ import java.util.List;
 
 // Written by Zhouzhou
 // This is a data structure to store the Data of a note
-// "Note" can be directly transferred to JSP
-// Hence, I use "Note" to do what JSON can do.
+// "Note" can be directly passed to JSP
+// Using "Note" makes everything easier.
 
 public class Note {
 

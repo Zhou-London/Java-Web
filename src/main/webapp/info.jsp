@@ -138,6 +138,7 @@
     Integer key = note.getID();
     String timestamp = note.getTimestamp();
 
+    // Link Note
     if (note.getNoteType() == NoteType.LINK) {
       String eLink = ((LinkNote)note).getLink();
   %>
@@ -147,6 +148,7 @@
   <p><span class="label">Link:</span><span class="value"><a href="<%= eLink %>" target="_blank"><%= eLink %></a></span></p>
   <p><span class="label">Timestamp:</span><span class="value"><%= timestamp %></span></p>
   <%
+    // Image Note
   } else if (note.getNoteType() == NoteType.IMAGE) {
     String imageUrl = ((ImageNote)note).getImage();
   %>
@@ -160,7 +162,7 @@
   <p><span class="label">Text:</span><span class="value"><%= text %></span></p>
   <p><span class="label">Timestamp:</span><span class="value"><%= timestamp %></span></p>
   <%
-  } else {
+  } else { // Default Note
   %>
   <p><span class="label">Key:</span><span class="value"><%= key %></span></p>
   <p><span class="label">Label:</span><span class="value"><%= label %></span></p>
